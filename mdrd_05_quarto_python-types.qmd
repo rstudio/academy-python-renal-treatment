@@ -1,0 +1,183 @@
+---
+title: "Data types"
+format: html
+---
+# Instructions
+
+This week, you learned about three data types in pandas---strings, datetimes, and categoricals.
+
+In this milestone, you'll work with the treatment type data contained in `mdrd` to investigate whether diet type affects change in GFR over time.
+
+To learn more about the variables contained in the data set, refer to the data dictionary
+[here](https://rstudio.github.io/academy-python-renal-treatment/assets/mdrd_dictionary.html).
+
+# Milestone
+
+```{python}
+#| label: 'setup'
+#| include: false
+
+# Import your packages here
+import pandas as pd
+from matplotlib import rcParams
+from plotnine import ggplot, aes, geom_boxplot, theme_bw, labs
+
+# Set some options
+pd.set_option('display.max_columns', None)
+rcParams.update({'savefig.bbox': 'tight'}) # Keeps plotnine legend from being cut off
+```
+
+## Data types
+
+In this milestone, you will manipulate strings and use a sorted categorical variable to investigate whether change in GFR over time varies between the very low-protein diet and the low-protein diet.
+
+## Recreation
+
+### Part 1 - Import
+
+Use the code chunk below to read the data from the data file `mdrd.csv`,
+which is stored in the `data/` folder in your working directory.
+Be sure to save the data set to a variable named `mdrd`.
+
+```{python}
+#| label: 'recreation-import'
+
+```
+
+You will be working with a tidied version of the `mdrd` data set, in which a single column, `treatment`, records which of the four treatments each patient received. Run the code chunk below to create `mdrd_tidy`.
+
+```{python}
+#| label: 'recreation-create-tidied'
+
+mdrd_tidy = (mdrd
+  .melt(
+    id_vars=['ptid', 'gfr', 'months', 'log_protein', 'followupmonths', 'dropout'],
+    value_vars=['dietl_normbp', 'dietl_lowbp', 'dietk_normbp', 'dietk_lowbp'],
+    var_name='treatment')
+)
+
+mdrd_tidy = (mdrd_tidy
+  .loc[mdrd_tidy['value'] == 1]
+  .drop(columns='value')
+)
+
+mdrd_tidy
+```
+
+### Part 2 - Strings
+
+Run the code below to see a table.
+
+```{python}
+#| label: 'recreate-this'
+solution = pd.read_csv('data/milestone05.csv')
+solution
+```
+
+Your task is to use what you've learned about the pandas package to transform `mdrd_tidy` into this table. You will need to:
+
+1. Create two new columns, `diet` and `bp`, by separating the character strings in `treatment`. (*Hint* Look up the help page for `.str.split()`)
+
+2. Remove `"diet"` from the values in `diet`. Also remove `"bp"` from the values in `bp`. (*Hint* Look up the help page for `.str.removeprefix` and `.str.removesuffix`)
+
+3. Recode the values in `diet` to make them more informative. Recode the values such that:
+
+    + `"k"` = `"very low-protein"`
+    + `"l"` = `"low-protein"`
+
+4. Recode the values in `bp` such that `"norm"` becomes `"normal"`.
+
+Work in the code chunk below. Save the result as `treatments`; we will use it in Part 3.
+
+```{python}
+#| label: 'recreation-strings'
+
+```
+
+Run the following code chunk to test whether you have the same answer as the solution:
+
+```{python}
+#| label: 'compare'
+
+# If your answer is correct, the comparison should return an empty DataFrame.
+treatments.reset_index(drop=True).round(10).compare(solution.round(10))
+```
+
+### Part 3 - The role of category order in visualizations
+
+Now that you have `diet` and `bp` variables, you can compute and visualize summaries for each diet and blood pressure group in the same manner as previous milestones. Run the chunk below to view a summary table.
+
+```{python}
+#| label: 'summary'
+import numpy as np
+def calc_slope(df):
+  first = df.iloc[0]['gfr']
+  last = df.iloc[-1]['gfr']
+  months = df['months'].max()
+  # Avoid warning caused by dividing by zero
+  if months == 0:
+    return np.nan
+  else:
+    return (last - first) / months
+
+treatments_summary = (treatments
+  .groupby(['diet', 'bp', 'ptid'])
+  .apply(calc_slope)
+  .reset_index()
+  .rename(columns={0: 'gfr_slope'})
+  .dropna(subset='gfr_slope')
+)
+
+treatments_summary
+```
+
+After you have run the chunk above to create `treatments_summary`, run the chunk below to visualize the data of `treatments_summary`.
+
+```{python}
+#| label: 'summary-plot'
+p = (
+  ggplot(treatments_summary, aes(x='diet', y='gfr_slope'))
+  + geom_boxplot()
+  + labs(x='Diet', y='GFR Slope')
+  + theme_bw()
+)
+p
+```
+
+This is a nice plot, but the order of `diet` on the x axis is arbitrary (alphabetical). We may want to give the `diet` a more principled order before we publish this plot.
+
+#### Visualization
+
+Using the File Explorer on the left, navigate to the `images/` directory, then click on `milestone05.png` to open an image in the Editor pane
+
+Consider this plot. Notice that "very low-protein" now appears to the left of "low-protein" on the x-axis. Your task is to recreate this plot.
+
+We recommend that you:
+
+1.  Convert the `diet` column in `treatments_summary` into a sorted, Categorical column.
+    _Hint:_ Use the function `pd.Categorical()`
+2.  Use the modified `diet` column to recreate the plot.
+
+```{python}
+#| label: 'recreation-visualize-1'
+
+```
+
+## Extension
+
+Using the code chunk below, investigate a research question about this data, using the skills you have learned this week and in previous weeks of Academy. Some ideas:
+
+1. Is there an interaction effect between diet and blood pressure group?
+2. Does diet or blood pressure group affect whether or not a patient dropped out of the study?
+3. [any other research question of interest]
+
+Alternately, working with a data set of your own, complete the following:
+
+1. Read in your data.
+2. If your data contains dates, string, or categorical data then use pandas to correctly format those columns.
+3. Use a table or graph to present a meaningful subset of your modified data.
+
+```{python}
+#| label: 'extension'
+
+```

@@ -1,0 +1,108 @@
+---
+title: "Python Basics"
+format: html
+---
+# Instructions
+
+Welcome to your first project milestone!
+
+In this project, you will use Python to investigate real data related to
+[renal disease](https://rstudio.github.io/academy-python-renal-treatment/assets/mdrd_dictionary.html).
+
+According to the CDC, more than 1 in 7 adults in the US are estimated to have chronic kidney disease (CDC: https://www.cdc.gov/kidneydisease/basics.html). We'd like to find a way to compare the effect of four different treatments on the progression of chronic kidney disease. We'll split this project into milestones that build on each other to iteratively explore the data.
+
+## How to complete a milestone
+
+For each milestone, you will need to:
+
+1. **Recreate a result,** like a plot, table, or model. This will require you to use the skills you have studied that week.
+
+2. **Extend the result.** Explore a new question about the data--this will provide an opportunity to both apply the skills you learned that week and to teach yourself something new. We will provide suggestions each week, but you are encouraged to explore any aspect of the data that interests you. Alternatively, apply and extend the skills you learned that week by working with your own data.
+
+Remember, being able to teach yourself new parts of a computer language is what will make you a truly competent open source programmer---and we are here to help.
+
+You'll share your extension with your groupmates at the weekly meeting, and show them how they could do the same.
+
+## The `mdrd` data set
+
+To learn more about the variables contained in the data set, refer to the data dictionary [here](https://rstudio.github.io/academy-python-renal-treatment/assets/mdrd_dictionary.html).
+
+# Milestone
+
+```{python}
+#| label: 'setup'
+
+# Import your packages here
+import pandas as pd
+
+# Set a display option so all columns of tables are displayed
+pd.set_option('display.max_columns', None)
+```
+
+## Python Basics
+
+In this milestone, you'll become familiar with the `mdrd` data set.
+
+## Recreation
+
+### Part 1
+
+Let's start by loading the data that we'll be using.
+
+Can you:
+
+- Run the setup chunk above, which will import pandas with the common alias, `pd`.
+- Use `help(pd.read_csv)` to explore the help page for the pandas `read_csv()` function.
+- Use `read_csv()` to load our data set, which is stored at `data/mdrd.csv`.
+- Save the data set to a variable named `mdrd`.
+
+```{python}
+#| label: 'recreation_1'
+
+```
+
+### Part 2
+
+Now that `mdrd` is loaded, run the following code chunk, which will pull out the `gfr` and `ptid` columns and save them as variables to use later.
+
+```{python}
+#| label: 'save_columns'
+
+# This code may look unfamiliar.
+# Don't worry, we will cover this in next week's tutorials.
+gfr = mdrd['gfr']
+ptid = mdrd['ptid']
+```
+
+### Part 3
+
+Use Python to explore our data:
+
+- Display the contents of `mdrd`
+- Display the contents of the columns that we saved separately for you: `gfr` and `ptid`
+- Use the built-in `min()` function to find the minimum glomerular filtration rate (GFR)
+- Use the built-in `max()` function to find the maximum glomerular filtration rate (GFR)
+- Use the pandas `Series.value_counts()` method to tally up the number of records for each patient in the data set, using the `ptid` variable
+
+*Hint:* you may want to look up the help pages for each of these functions.
+
+Write your code in the following chunk:
+
+```{python}
+#| label: 'recreation_2'
+
+```
+
+## Extension
+
+Explore `mdrd` or one of the individual columns in a new way.
+Consider using a new function, or something that you can learn from a help page. Are there any functions that you would like to use from the `statistics` package?
+
+**For your first extension, we encourage you to think small.** Throughout this course, you will build many skills to explore data; for this first week, your work will likely be fairly straightforward. Consider _limiting yourself to 30-45 minutes_ for this portion of your work; at the end of that time interval, stop working and make notes on your progress, dead-ends, and aspirations -- bringing those to your group for discussion during the milestone session.
+
+Write your extension code in the following chunk:
+
+```{python}
+#| label: 'extension'
+
+```
